@@ -1,0 +1,1160 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="../../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700;800&amp;family=Roboto+Mono:wght@300;400;500;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,500,0,0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<title>分析方法轉移風險評估器 · quality-qms｜Jvision 系統 Demo</title>
+<style>
+:root{
+  --color-primary:#15803d;
+  --color-on-primary:#fff;
+  --color-secondary:#22c55e;
+  --color-on-secondary:#0f172a;
+  --color-accent:#d97706;
+  --color-on-accent:#000;
+  --color-background:#f0fdf4;
+  --color-foreground:#14532d;
+  --color-card:#fff;
+  --color-card-foreground:#14532d;
+  --color-muted:#e8f0f1;
+  --color-muted-foreground:#475569;
+  --color-border:#86c99c;
+  --color-destructive:#dc2626;
+  --color-on-destructive:#fff;
+  --color-ring:#15803d;
+  --blue:#15803d;
+  --ink:#102f1e;
+  --muted:#475569;
+  --line:#86c99c;
+  --amber:#a95800;
+  --red:#b91c1c;
+  --green:#116a33;
+  --white:#fff;
+  --grid:rgba(20,83,45,.12);
+  --shadow:7px 7px 0 #14532d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  margin:0;
+  min-width:320px;
+  background-color:var(--color-background);
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);
+  font-family:Exo,"Noto Sans TC",sans-serif;
+  line-height:1.55;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button,input,select,textarea{border-radius:0}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{
+  outline:4px solid var(--color-accent);
+  outline-offset:3px;
+}
+.material-symbols-outlined{font-size:20px;line-height:1;vertical-align:middle}
+.shell{min-height:100vh}
+.side{
+  position:fixed;
+  inset:0 auto 0 0;
+  z-index:20;
+  display:flex;
+  width:282px;
+  flex-direction:column;
+  padding:22px 17px;
+  overflow-y:auto;
+  background:var(--ink);
+  color:#fff;
+  border-right:4px solid var(--color-accent);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 4px 24px;
+  color:#fff;
+  font-size:17px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.brand-mark{
+  display:grid;
+  width:44px;
+  height:44px;
+  place-items:center;
+  flex:0 0 auto;
+  background:var(--color-secondary);
+  color:var(--color-on-secondary);
+  border:2px solid #fff;
+  box-shadow:4px 4px 0 var(--color-accent);
+}
+.brand small{
+  display:block;
+  color:#bbf7d0;
+  font:500 10px/1.4 "Roboto Mono",monospace;
+  letter-spacing:.13em;
+}
+.nav-label{
+  padding:9px 10px;
+  background:var(--color-accent);
+  color:var(--color-on-accent);
+  border:2px solid #fff;
+  font:700 11px/1 "Roboto Mono",monospace;
+  letter-spacing:.12em;
+}
+.nav{
+  position:relative;
+  display:grid;
+  gap:0;
+  margin-top:12px;
+  border:2px solid #86c99c;
+}
+.nav button{
+  position:relative;
+  display:grid;
+  grid-template-columns:38px 1fr 20px;
+  min-height:58px;
+  align-items:center;
+  padding:8px 10px;
+  border:0;
+  border-bottom:1px solid #86c99c;
+  background:#102f1e;
+  color:#d1fae5;
+  text-align:left;
+}
+.nav button:last-child{border-bottom:0}
+.nav button:hover{background:#174b2e;color:#fff}
+.nav button.active{
+  background:var(--color-secondary);
+  color:var(--color-on-secondary);
+  font-weight:800;
+}
+.nav button .num{
+  display:grid;
+  width:29px;
+  height:29px;
+  place-items:center;
+  background:#fff;
+  color:var(--ink);
+  border:2px solid currentColor;
+  font:700 12px/1 "Roboto Mono",monospace;
+}
+.nav button.active .num{background:var(--ink);color:#fff}
+.nav button .arrow{opacity:0;font-size:22px;font-weight:800}
+.nav button.active .arrow{opacity:1}
+.side-note{
+  margin-top:auto;
+  padding:14px;
+  background:#fff;
+  color:var(--muted);
+  border:3px solid var(--color-secondary);
+  box-shadow:4px 4px 0 var(--color-accent);
+  font-size:12px;
+}
+.side-note strong{
+  display:block;
+  margin-bottom:5px;
+  color:var(--ink);
+  font:700 13px/1.4 "Roboto Mono",monospace;
+}
+.main{min-width:0;margin-left:282px}
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:15;
+  display:flex;
+  min-height:74px;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:10px 28px;
+  background:rgba(240,253,244,.96);
+  border-bottom:4px solid var(--ink);
+}
+.breadcrumb{color:var(--muted);font-size:13px}
+.breadcrumb strong{color:var(--ink)}
+.top-actions{display:flex;align-items:center;gap:9px}
+.icon-btn,.ghost-btn,.primary-btn{
+  min-height:44px;
+  padding:0 14px;
+  border:2px solid var(--ink);
+  background:#fff;
+  color:var(--ink);
+  font-weight:700;
+  box-shadow:3px 3px 0 var(--ink);
+}
+.icon-btn{width:44px;padding:0}
+.icon-btn:hover,.ghost-btn:hover{background:var(--color-muted)}
+.primary-btn{
+  background:var(--color-accent);
+  color:var(--color-on-accent);
+}
+.primary-btn:hover{background:#f59e0b}
+.icon-btn:active,.ghost-btn:active,.primary-btn:active{transform:translate(3px,3px);box-shadow:none}
+.content{width:min(100%,1580px);margin:auto;padding:30px 28px 52px}
+.screen{display:none}
+.screen.active{display:block;animation:reveal .35s ease-out both}
+@keyframes reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.screen-head{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:22px;
+  padding:22px;
+  background:var(--color-card);
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+}
+.screen-head:before{
+  content:"";
+  position:absolute;
+  width:72px;
+  height:11px;
+  right:18%;
+  bottom:-7px;
+  background:var(--color-secondary);
+  border:2px solid var(--ink);
+}
+.eyebrow{
+  margin-bottom:5px;
+  color:var(--color-primary);
+  font:700 12px/1.4 "Roboto Mono",monospace;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+h1,h2,h3,p{margin-top:0}
+h1{
+  margin-bottom:7px;
+  color:var(--ink);
+  font-size:clamp(27px,3.4vw,43px);
+  font-weight:800;
+  line-height:1.05;
+  letter-spacing:-.025em;
+}
+h2{color:var(--ink);font-size:19px;line-height:1.25}
+h3{color:var(--ink);font-size:15px}
+.screen-head p{max-width:760px;margin:0;color:var(--muted)}
+.badge,.pill,.state{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap;
+  border-radius:0;
+  font-size:12px;
+  font-weight:800;
+}
+.badge{
+  padding:8px 11px;
+  background:#dcfce7;
+  color:var(--ink);
+  border:2px solid var(--ink);
+}
+.pill,.state{padding:5px 8px;border:1px solid currentColor}
+.state.green{background:#dcfce7;color:#14532d}
+.state.amber{background:#fff1c7;color:#7c3e00}
+.state.red{background:#fee2e2;color:#991b1b}
+.state.purple{background:#d1fae5;color:#14532d}
+.card{
+  background:var(--color-card);
+  color:var(--color-card-foreground);
+  border:2px solid var(--ink);
+  box-shadow:5px 5px 0 rgba(20,83,45,.9);
+}
+.card-pad{padding:20px}
+.card-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:17px;
+  padding-bottom:11px;
+  border-bottom:2px solid var(--ink);
+}
+.card-title h2,.card-title h3{margin:0}
+.subtle{color:var(--muted);font-size:12px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.8fr);gap:20px}
+.grid-equal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat{
+  position:relative;
+  padding:16px;
+  overflow:hidden;
+  background:#fff;
+  border:2px solid var(--ink);
+  box-shadow:4px 4px 0 var(--color-primary);
+}
+.stat:after{
+  content:"";
+  position:absolute;
+  width:34px;
+  height:7px;
+  top:0;
+  right:0;
+  background:var(--color-secondary);
+}
+.stat .label{color:var(--muted);font-size:12px;font-weight:700}
+.stat .value{
+  margin:4px 0 1px;
+  color:var(--ink);
+  font:800 28px/1.2 "Roboto Mono",monospace;
+  font-variant-numeric:tabular-nums;
+}
+.stat .delta{color:var(--green);font-size:11px;font-weight:700}
+.field{display:grid;gap:7px}
+.field label{color:var(--ink);font-size:12px;font-weight:800}
+.field input,.field select,.field textarea{
+  width:100%;
+  min-height:44px;
+  padding:9px 11px;
+  background:#fff;
+  color:var(--ink);
+  border:2px solid var(--line);
+}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:var(--ink)}
+.field textarea{min-height:78px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.divider{height:2px;margin:18px 0;background:var(--ink)}
+.check-row{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:11px 0;
+  border-bottom:1px solid var(--line);
+}
+.check-row:last-child{border-bottom:0}
+.check{
+  display:grid;
+  width:22px;
+  height:22px;
+  place-items:center;
+  flex:0 0 auto;
+  background:#dcfce7;
+  color:#14532d;
+  border:2px solid currentColor;
+  font:800 12px/1 "Roboto Mono",monospace;
+}
+.check.pending{background:#fff1c7;color:#7c3e00}
+.progress{
+  height:13px;
+  overflow:hidden;
+  background:var(--color-muted);
+  border:2px solid var(--ink);
+}
+.progress span{
+  display:block;
+  height:100%;
+  background:var(--color-secondary);
+  border-right:2px solid var(--ink);
+}
+.timeline{display:grid}
+.timeline-item{display:grid;grid-template-columns:36px 1fr;gap:12px;min-height:75px}
+.timeline-dot{
+  position:relative;
+  display:grid;
+  width:29px;
+  height:29px;
+  place-items:center;
+  background:var(--ink);
+  color:#fff;
+  border:2px solid var(--color-secondary);
+  font:700 12px/1 "Roboto Mono",monospace;
+}
+.timeline-dot:after{
+  content:"";
+  position:absolute;
+  top:29px;
+  bottom:-45px;
+  width:2px;
+  background:var(--ink);
+}
+.timeline-item:last-child .timeline-dot:after{display:none}
+.timeline-item p{
+  margin:3px 0;
+  color:var(--muted);
+  font:400 11px/1.5 "Roboto Mono",monospace;
+}
+.table-wrap{overflow:auto;border:2px solid var(--ink)}
+table{width:100%;min-width:650px;border-collapse:collapse;font-size:13px}
+th{
+  padding:12px 13px;
+  background:var(--ink);
+  color:#fff;
+  text-align:left;
+  font:700 11px/1.4 "Roboto Mono",monospace;
+  letter-spacing:.04em;
+}
+td{padding:13px;border-top:1px solid var(--line);vertical-align:middle}
+tbody tr:nth-child(even) td{background:#f0fdf4}
+tbody tr:hover td{background:#dcfce7}
+td:nth-child(n+2),th:nth-child(n+2){font-variant-numeric:tabular-nums}
+.mono{
+  color:var(--ink);
+  font-family:"Roboto Mono",monospace;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.compare-head,.compare-row{
+  display:grid;
+  grid-template-columns:1.25fr 1fr 1fr .75fr;
+  gap:10px;
+  align-items:center;
+}
+.compare-head{
+  padding:11px 13px;
+  background:var(--ink);
+  color:#fff;
+  font:700 11px/1.4 "Roboto Mono",monospace;
+}
+.compare-row{padding:14px 13px;border:1px solid var(--line);border-top:0;font-size:13px}
+.compare-row:hover{background:#f0fdf4}
+.lab-tag{
+  padding:5px 8px;
+  background:var(--color-muted);
+  border:1px solid var(--ink);
+  font:700 11px/1.4 "Roboto Mono",monospace;
+}
+.matrix{
+  display:grid;
+  grid-template-columns:1.2fr repeat(4,minmax(70px,1fr));
+  overflow:auto;
+  border:2px solid var(--ink);
+}
+.matrix>div{
+  min-width:84px;
+  padding:12px;
+  border-right:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+  font-size:12px;
+}
+.matrix>div:nth-child(5n){border-right:0}
+.matrix .mh{background:var(--ink);color:#fff;font-weight:700}
+.level{
+  display:inline-flex;
+  width:31px;
+  height:31px;
+  align-items:center;
+  justify-content:center;
+  border:2px solid currentColor;
+  font:800 13px/1 "Roboto Mono",monospace;
+}
+.l4{background:#dcfce7;color:#14532d}
+.l3{background:#dbeafe;color:#1e40af}
+.l2{background:#fff1c7;color:#7c3e00}
+.l1{background:#fee2e2;color:#991b1b}
+.person{display:flex;align-items:center;gap:9px}
+.avatar{
+  display:grid;
+  width:34px;
+  height:34px;
+  place-items:center;
+  background:var(--color-secondary);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  font-weight:800;
+}
+.condition-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.condition{
+  position:relative;
+  padding:16px;
+  background:#fff;
+  border:2px solid var(--ink);
+  box-shadow:4px 4px 0 var(--color-primary);
+}
+.condition:nth-child(even){transform:translateY(8px)}
+.condition .icon,.action-icon{
+  display:grid;
+  width:40px;
+  height:40px;
+  place-items:center;
+  margin-bottom:12px;
+  background:var(--color-secondary);
+  color:var(--ink);
+  border:2px solid var(--ink);
+}
+.condition strong{display:block;color:var(--ink)}
+.condition .measure{
+  margin:9px 0;
+  color:var(--ink);
+  font:800 23px/1.2 "Roboto Mono",monospace;
+  font-variant-numeric:tabular-nums;
+}
+.range{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+.alert{
+  display:flex;
+  gap:11px;
+  padding:14px;
+  background:#fff1c7;
+  color:#5c3000;
+  border:2px solid var(--color-accent);
+  font-size:12px;
+}
+.risk-hero{
+  position:relative;
+  overflow:hidden;
+  padding:26px;
+  background:var(--ink);
+  color:#fff;
+  border:4px solid var(--color-secondary);
+  box-shadow:8px 8px 0 var(--color-accent);
+}
+.risk-hero:after{
+  content:"RISK / 038";
+  position:absolute;
+  right:-16px;
+  bottom:-25px;
+  color:rgba(255,255,255,.08);
+  font:800 clamp(45px,9vw,120px)/1 "Roboto Mono",monospace;
+  white-space:nowrap;
+}
+.score-ring{
+  position:relative;
+  display:grid;
+  width:142px;
+  height:142px;
+  place-items:center;
+  flex:0 0 auto;
+  background:conic-gradient(var(--color-accent) 0 38%,#315d43 38%);
+  border:3px solid #fff;
+  border-radius:50%;
+}
+.score-ring:before{
+  content:"";
+  position:absolute;
+  inset:14px;
+  background:var(--ink);
+  border:2px solid #fff;
+  border-radius:50%;
+}
+.score-ring div{position:relative;text-align:center}
+.score-ring b{display:block;font:800 36px/1 "Roboto Mono",monospace}
+.risk-content{position:relative;z-index:1;display:flex;align-items:center;gap:27px}
+.factor{padding:13px 0;border-bottom:1px solid var(--line)}
+.factor:last-child{border:0}
+.factor-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:12px}
+.factor-head span{font-family:"Roboto Mono",monospace;font-weight:700}
+.chart-box{position:relative;height:255px}
+.approval-board{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:20px}
+.action-item{
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  gap:12px;
+  align-items:center;
+  margin-bottom:10px;
+  padding:14px;
+  border:2px solid var(--line);
+}
+.action-item:hover{border-color:var(--ink);background:#f0fdf4}
+.action-item .action-icon{margin:0}
+.signature{
+  padding:17px;
+  background:#f0fdf4;
+  border:2px dashed var(--ink);
+}
+.signature-line{
+  display:flex;
+  justify-content:space-between;
+  margin-top:24px;
+  padding-top:8px;
+  color:var(--muted);
+  border-top:2px solid var(--ink);
+  font:400 11px/1.4 "Roboto Mono",monospace;
+}
+.stepper{
+  display:flex;
+  align-items:center;
+  margin:0 0 20px;
+  padding:12px;
+  overflow:auto;
+  background:#fff;
+  border:2px solid var(--ink);
+}
+.step-node{
+  display:flex;
+  align-items:center;
+  white-space:nowrap;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+.step-node span{
+  display:grid;
+  width:29px;
+  height:29px;
+  place-items:center;
+  margin-right:7px;
+  background:var(--color-muted);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  font-family:"Roboto Mono",monospace;
+  font-weight:800;
+}
+.step-node.done{color:var(--green)}
+.step-node.done span{background:var(--color-secondary)}
+.step-line{width:34px;height:3px;margin:0 8px;flex:0 0 auto;background:var(--ink)}
+.mobile-title{display:none}
+@media(max-width:1050px){
+  .side{width:224px}.main{margin-left:224px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid-3,.condition-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .approval-board{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .side{
+    position:sticky;
+    top:0;
+    width:100%;
+    height:auto;
+    padding:9px 10px;
+    overflow:visible;
+    border:0;
+    border-bottom:4px solid var(--color-accent);
+  }
+  .brand,.nav-label,.side-note{display:none}
+  .nav{grid-template-columns:repeat(6,1fr);margin:0;border:2px solid #fff}
+  .nav button{display:flex;min-height:46px;justify-content:center;padding:5px;border:0;border-right:1px solid #86c99c}
+  .nav button:last-child{border:0}
+  .nav button .num{width:33px;height:33px}
+  .nav button .label,.nav button .arrow{display:none}
+  .main{margin-left:0}
+  .topbar{top:56px;min-height:60px;padding:8px 14px;border-bottom-width:3px}
+  .breadcrumb{display:none}
+  .mobile-title{display:block;color:var(--ink);font-size:13px;font-weight:800}
+  .top-actions .ghost-btn{display:none}
+  .content{padding:20px 14px 38px}
+  .screen-head{display:block;padding:18px;box-shadow:5px 5px 0 var(--ink)}
+  .screen-head .badge{margin-top:13px}
+  .grid-2,.grid-equal,.approval-board{grid-template-columns:1fr}
+  .grid-3,.condition-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .compare-head,.compare-row{grid-template-columns:1.2fr 1fr 1fr}
+  .compare-head>*:last-child,.compare-row>*:last-child{display:none}
+  .condition:nth-child(even){transform:none}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat{padding:12px}.stat .value{font-size:22px}
+  .grid-3,.condition-grid{grid-template-columns:1fr}
+  .card-pad{padding:14px}
+  .risk-content{align-items:flex-start;flex-direction:column}
+  .score-ring{width:122px;height:122px}
+  .action-item{grid-template-columns:38px 1fr}
+  .action-item>.state{grid-column:2}
+  .top-actions .icon-btn{display:none}
+  .primary-btn{padding:0 10px}
+  h1{font-size:28px}
+}
+@media(max-width:720px){
+  .grid-2,.approval-board,.card,.card-title{min-width:0;max-width:100%}
+  .card-title{flex-wrap:wrap}
+  .matrix{grid-template-columns:minmax(135px,1.2fr) repeat(4,minmax(80px,1fr))}
+  .table-wrap,.matrix{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+  .screen.active{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-mark"><span class="material-symbols-outlined">science</span></span>
+      <span>JVision QMS<small>METHOD TRANSFER</small></span>
+    </div>
+    <div class="nav-label">轉移工作台</div>
+    <nav class="nav" aria-label="方法轉移流程">
+      <button type="button" data-i="0"><span class="num">1</span><span class="label">建立轉移計畫</span><span class="arrow">›</span></button>
+      <button type="button" data-i="1"><span class="num">2</span><span class="label">比對儀器能力</span><span class="arrow">›</span></button>
+      <button type="button" data-i="2"><span class="num">3</span><span class="label">評估人員能力</span><span class="arrow">›</span></button>
+      <button type="button" data-i="3"><span class="num">4</span><span class="label">檢查環境差異</span><span class="arrow">›</span></button>
+      <button type="button" data-i="4"><span class="num">5</span><span class="label">模擬再現風險</span><span class="arrow">›</span></button>
+      <button type="button" data-i="5"><span class="num">6</span><span class="label">核准轉移方案</span><span class="arrow">›</span></button>
+    </nav>
+    <div class="side-note">
+      <strong>ANA-2026-017</strong>
+      HPLC 含量分析法 · 台北研發實驗室 → 新竹品管實驗室
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="breadcrumb">研發管理 / 分析方法轉移 / <strong id="crumb">建立轉移計畫</strong></div>
+      <div class="mobile-title">分析方法轉移風險評估器</div>
+      <div class="top-actions">
+        <button class="icon-btn" type="button" aria-label="查看通知"><span class="material-symbols-outlined">notifications</span></button>
+        <button class="ghost-btn" type="button"><span class="material-symbols-outlined">history</span> 稽核軌跡</button>
+        <button class="primary-btn" type="button" id="nextAction">儲存並下一步</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="screen" data-screen="0">
+        <div class="screen-head">
+          <div><div class="eyebrow">Transfer plan · v0</div><h1>建立轉移計畫</h1><p>選定分析方法、兩端實驗室、樣品與驗收目標，先建立一致的轉移邊界。</p></div>
+          <span class="badge"><span class="material-symbols-outlined">edit_document</span> 草稿 · 72%</span>
+        </div>
+        <div class="stepper">
+          <div class="step-node done"><span>1</span>基本資料</div><div class="step-line"></div>
+          <div class="step-node done"><span>2</span>實驗室</div><div class="step-line"></div>
+          <div class="step-node"><span>3</span>驗收目標</div><div class="step-line"></div>
+          <div class="step-node"><span>4</span>送出</div>
+        </div>
+        <div class="grid-2">
+          <div class="card card-pad">
+            <div class="card-title"><h2>計畫基本資料</h2><span class="state purple">ICH Q2(R2)</span></div>
+            <div class="form-grid">
+              <div class="field"><label for="methodId">分析方法編號</label><input id="methodId" value="AM-HPLC-042"></div>
+              <div class="field"><label for="methodVersion">方法版本</label><select id="methodVersion"><option>v3.2 · 已核准</option></select></div>
+              <div class="field"><label for="sourceLab">來源實驗室</label><select id="sourceLab"><option>台北研發實驗室</option></select></div>
+              <div class="field"><label for="receiverLab">接收實驗室</label><select id="receiverLab"><option>新竹品管實驗室</option></select></div>
+              <div class="field"><label for="sampleBatch">橋接樣品</label><input id="sampleBatch" value="3 批成品 + 1 批標準品"></div>
+              <div class="field"><label for="targetDay">目標完成日</label><input id="targetDay" type="date" value="2026-09-18"></div>
+            </div>
+            <div class="divider"></div>
+            <div class="field"><label for="acceptance">主要驗收標準</label><textarea id="acceptance">兩實驗室平均含量差異 ≤ 2.0%；重複性 RSD ≤ 1.5%；系統適用性各項目均符合 AM-HPLC-042 v3.2。</textarea></div>
+          </div>
+          <div>
+            <div class="card card-pad">
+              <div class="card-title"><h2>計畫完整度</h2><strong style="color:var(--blue)">72%</strong></div>
+              <div class="progress"><span style="width:72%"></span></div>
+              <div class="check-row"><span class="check">✓</span><div><strong>方法與版本已鎖定</strong><div class="subtle">AM-HPLC-042 v3.2</div></div></div>
+              <div class="check-row"><span class="check">✓</span><div><strong>雙方實驗室已確認</strong><div class="subtle">主管皆已接受邀請</div></div></div>
+              <div class="check-row"><span class="check pending">!</span><div><strong>待補樣品運送條件</strong><div class="subtle">需指定 2–8°C 溫控紀錄器</div></div></div>
+            </div>
+            <div class="card card-pad" style="margin-top:18px">
+              <div class="card-title"><h3>近期操作</h3><span class="subtle">可追溯</span></div>
+              <div class="timeline">
+                <div class="timeline-item"><span class="timeline-dot">1</span><div><strong>林怡君建立計畫</strong><p>今日 09:42 · QMS-TR-017</p></div></div>
+                <div class="timeline-item"><span class="timeline-dot">2</span><div><strong>王志豪確認接收</strong><p>今日 10:18 · 電子簽章有效</p></div></div>
+                <div class="timeline-item"><span class="timeline-dot">3</span><div><strong>系統載入方法版本</strong><p>今日 10:21 · SHA 記錄完成</p></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="1">
+        <div class="screen-head">
+          <div><div class="eyebrow">Instrument capability · v1</div><h1>比對儀器能力</h1><p>核對設備規格、校正、耗材與軟體版本，快速辨識會影響層析結果的能力落差。</p></div>
+          <span class="badge"><span class="material-symbols-outlined">biotech</span> 8 項已比對</span>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="label">完全相符</div><div class="value">5</div><div class="delta">可直接轉移</div></div>
+          <div class="stat"><div class="label">可接受差異</div><div class="value">2</div><div class="delta">已有控制措施</div></div>
+          <div class="stat"><div class="label">關鍵缺口</div><div class="value" style="color:var(--red)">1</div><div class="delta" style="color:var(--red)">需橋接試驗</div></div>
+          <div class="stat"><div class="label">校正有效率</div><div class="value">100%</div><div class="delta">證書均在效期內</div></div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-title"><h2>雙實驗室能力對照</h2><button class="ghost-btn" type="button"><span class="material-symbols-outlined">upload_file</span> 匯入設備清冊</button></div>
+          <div class="compare-head"><span>能力項目</span><span>台北研發實驗室</span><span>新竹品管實驗室</span><span>判定</span></div>
+          <div class="compare-row"><strong>HPLC 主機</strong><span class="lab-tag">Agilent 1260 II</span><span class="lab-tag">Waters Arc HPLC</span><span class="state amber">需確認</span></div>
+          <div class="compare-row"><strong>UV 偵測器範圍</strong><span>190–600 nm</span><span>190–700 nm</span><span class="state green">符合</span></div>
+          <div class="compare-row"><strong>取樣器溫控</strong><span>4–40°C</span><span>8–40°C</span><span class="state red">關鍵差異</span></div>
+          <div class="compare-row"><strong>資料系統</strong><span>OpenLab 2.8</span><span>Empower 3.8</span><span class="state amber">可控</span></div>
+          <div class="compare-row"><strong>分析天平</strong><span>0.01 mg · CAL-482</span><span>0.01 mg · CAL-771</span><span class="state green">符合</span></div>
+          <div class="compare-row"><strong>色層分析管柱</strong><span>Zorbax C18 4.6×150</span><span>Zorbax C18 4.6×150</span><span class="state green">符合</span></div>
+        </div>
+        <div class="grid-equal" style="margin-top:18px">
+          <div class="card card-pad">
+            <div class="card-title"><h2>關鍵差異處置</h2><span class="state red">風險 74</span></div>
+            <div class="alert"><span class="material-symbols-outlined">warning</span><div><strong>取樣器最低溫度不足</strong><br>方法要求樣品於 5°C 暫存，新竹設備最低為 8°C，可能增加降解物 0.12–0.28%。</div></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>改用外接冷卻盤</strong><div class="subtle">設備編號 EQ-CH-014，已通過 OQ</div></div></div>
+            <div class="check-row"><span class="check pending">!</span><div><strong>安排 5°C / 8°C 橋接試驗</strong><div class="subtle">技術員陳冠宇 · D+2</div></div></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title"><h2>校正與軟體證據</h2><span class="subtle">4 份附件</span></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>HPLC 校正證書</strong><div class="subtle">有效至 2027-02-14 · PDF 已驗章</div></div></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>天平日常確認</strong><div class="subtle">最近執行 2026-08-21 · 合格</div></div></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>Empower 稽核軌跡</strong><div class="subtle">設定檔 CFG-118 · 已鎖定</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="2">
+        <div class="screen-head">
+          <div><div class="eyebrow">Competency matrix · v2</div><h1>評估人員能力</h1><p>確認培訓紀錄、實作經驗與關鍵操作缺口，將個人經驗轉為可查證的熟練度矩陣。</p></div>
+          <span class="badge"><span class="material-symbols-outlined">badge</span> 4 位受評人員</span>
+        </div>
+        <div class="grid-2">
+          <div class="card card-pad">
+            <div class="card-title"><h2>關鍵步驟熟練度矩陣</h2><span class="subtle">L4 可獨立執行</span></div>
+            <div class="matrix">
+              <div class="mh">人員 / 能力</div><div class="mh">標準液配置</div><div class="mh">系統適用性</div><div class="mh">積分審查</div><div class="mh">偏差處理</div>
+              <div><div class="person"><span class="avatar">陳</span><strong>陳冠宇</strong></div></div><div><span class="level l4">4</span></div><div><span class="level l4">4</span></div><div><span class="level l3">3</span></div><div><span class="level l2">2</span></div>
+              <div><div class="person"><span class="avatar">張</span><strong>張雅雯</strong></div></div><div><span class="level l3">3</span></div><div><span class="level l4">4</span></div><div><span class="level l4">4</span></div><div><span class="level l3">3</span></div>
+              <div><div class="person"><span class="avatar">周</span><strong>周柏廷</strong></div></div><div><span class="level l2">2</span></div><div><span class="level l3">3</span></div><div><span class="level l2">2</span></div><div><span class="level l1">1</span></div>
+              <div><div class="person"><span class="avatar">李</span><strong>李欣儒</strong></div></div><div><span class="level l4">4</span></div><div><span class="level l3">3</span></div><div><span class="level l3">3</span></div><div><span class="level l3">3</span></div>
+            </div>
+            <div class="divider"></div>
+            <div class="subtle">評級：L1 僅受訓 · L2 需監督 · L3 可執行 · L4 可指導。證據來源為 LMS、分析批次與偏差紀錄。</div>
+          </div>
+          <div>
+            <div class="card card-pad">
+              <div class="card-title"><h2>團隊準備度</h2><strong style="color:var(--blue)">81%</strong></div>
+              <div class="chart-box"><canvas id="skillChart" aria-label="人員能力雷達圖"></canvas></div>
+            </div>
+            <div class="card card-pad" style="margin-top:18px">
+              <div class="card-title"><h2>必要補訓</h2><span class="state amber">2 項待完成</span></div>
+              <div class="check-row"><span class="check pending">!</span><div><strong>OOS / OOT 偏差調查演練</strong><div class="subtle">周柏廷 · 導師張雅雯 · 8/28 前</div></div></div>
+              <div class="check-row"><span class="check pending">!</span><div><strong>手動積分情境審查</strong><div class="subtle">陳冠宇 · 需完成 3 組盲樣</div></div></div>
+              <div class="check-row"><span class="check">✓</span><div><strong>AM-HPLC-042 理論測驗</strong><div class="subtle">全員平均 92 分 · 已歸檔</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad" style="margin-top:18px">
+          <div class="card-title"><h2>資格證據清單</h2><span class="subtle">最後同步：今日 11:06</span></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>人員</th><th>最近執行批次</th><th>年度再認證</th><th>偏差經驗</th><th>建議角色</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">張雅雯</td><td>2026-08-17 · 合格</td><td><span class="state green">有效</span></td><td>主導 4 件</td><td>接收端覆核者</td></tr>
+              <tr><td class="mono">陳冠宇</td><td>2026-08-12 · 合格</td><td><span class="state green">有效</span></td><td>參與 2 件</td><td>主要分析員</td></tr>
+              <tr><td class="mono">周柏廷</td><td>2026-07-28 · 監督</td><td><span class="state amber">補訓中</span></td><td>尚無</td><td>觀察員</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="3">
+        <div class="screen-head">
+          <div><div class="eyebrow">Environment delta · v3</div><h1>檢查環境差異</h1><p>比較溫濕度、供電、潔淨度、試劑與樣品前處理條件，確認環境差異是否可接受。</p></div>
+          <span class="badge"><span class="material-symbols-outlined">device_thermostat</span> 監測區間 7 天</span>
+        </div>
+        <div class="condition-grid">
+          <div class="condition"><div class="icon"><span class="material-symbols-outlined">device_thermostat</span></div><strong>室內溫度</strong><div class="measure">22.4°C</div><div class="progress"><span style="width:68%"></span></div><div class="range"><span>規格 20°C</span><span>24°C</span></div></div>
+          <div class="condition"><div class="icon"><span class="material-symbols-outlined">humidity_percentage</span></div><strong>相對濕度</strong><div class="measure">54.8%</div><div class="progress"><span style="width:55%"></span></div><div class="range"><span>規格 40%</span><span>65%</span></div></div>
+          <div class="condition"><div class="icon"><span class="material-symbols-outlined">electric_bolt</span></div><strong>供電穩定度</strong><div class="measure">±1.2%</div><div class="progress"><span style="width:32%"></span></div><div class="range"><span>目標 ±0%</span><span>上限 ±5%</span></div></div>
+          <div class="condition"><div class="icon"><span class="material-symbols-outlined">air</span></div><strong>微粒控制</strong><div class="measure">ISO 8</div><span class="state green">符合方法需求</span></div>
+          <div class="condition"><div class="icon"><span class="material-symbols-outlined">vaccines</span></div><strong>試劑平衡時間</strong><div class="measure">42 min</div><span class="state amber">來源端為 30 min</span></div>
+          <div class="condition"><div class="icon"><span class="material-symbols-outlined">ac_unit</span></div><strong>樣品暫存</strong><div class="measure">5.3°C</div><span class="state green">外接冷卻盤有效</span></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card card-pad">
+            <div class="card-title"><h2>溫濕度趨勢</h2><span class="state green">無超限</span></div>
+            <div class="chart-box"><canvas id="envChart" aria-label="溫濕度趨勢圖"></canvas></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title"><h2>差異判定清單</h2><span class="subtle">研究員：許庭瑜</span></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>實驗室溫濕度</strong><div class="subtle">兩端 P95 差異：溫度 0.7°C、濕度 4.2%</div></div></div>
+            <div class="check-row"><span class="check pending">!</span><div><strong>移動相平衡時間</strong><div class="subtle">接收端超出來源端 12 分鐘，需納入 SOP</div></div></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>試劑與標準品批號</strong><div class="subtle">純度規格一致，CoA 已連結</div></div></div>
+            <div class="check-row"><span class="check">✓</span><div><strong>樣品前處理照度</strong><div class="subtle">均使用黃光區，照度低於 500 lux</div></div></div>
+            <div class="alert" style="margin-top:12px"><span class="material-symbols-outlined">rule</span><div><strong>條件式通過</strong><br>將移動相平衡時間固定為 45±5 分鐘後，可進入風險模擬。</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="4">
+        <div class="screen-head">
+          <div><div class="eyebrow">AI reproducibility · v4</div><h1>模擬再現風險</h1><p>綜合儀器、人員與環境證據，量化各差異對精密度、準確度及系統適用性的影響。</p></div>
+          <span class="badge"><span class="material-symbols-outlined">experiment</span> 模型 MT-RISK 2.4</span>
+        </div>
+        <div class="risk-hero">
+          <div class="risk-content">
+            <div class="score-ring"><div><b>38</b><span>中低風險</span></div></div>
+            <div><div style="opacity:.78;font:500 12px 'Roboto Mono',monospace;letter-spacing:.1em">TRANSFER SUCCESS FORECAST</div><h2 style="color:#fff;font-size:27px;margin:5px 0">預估轉移成功率 86%</h2><p style="max-width:640px;margin:0;color:#d1fae5">完成取樣器溫控橋接試驗與兩項補訓後，成功率可提高至 94%。主要不確定性來自不同資料系統的積分規則。</p></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card card-pad">
+            <div class="card-title"><h2>再現性模擬分布</h2><span class="subtle">10,000 次模擬</span></div>
+            <div class="chart-box"><canvas id="riskChart" aria-label="再現性風險模擬圖"></canvas></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title"><h2>風險貢獻因子</h2><span class="state amber">3 項需控制</span></div>
+            <div class="factor"><div class="factor-head"><strong>取樣器溫控差異</strong><span>31%</span></div><div class="progress"><span style="width:31%;background:var(--red)"></span></div></div>
+            <div class="factor"><div class="factor-head"><strong>積分軟體規則</strong><span>27%</span></div><div class="progress"><span style="width:27%;background:var(--amber)"></span></div></div>
+            <div class="factor"><div class="factor-head"><strong>分析員偏差處理經驗</strong><span>18%</span></div><div class="progress"><span style="width:18%"></span></div></div>
+            <div class="factor"><div class="factor-head"><strong>移動相平衡時間</strong><span>14%</span></div><div class="progress"><span style="width:14%;background:#2563eb"></span></div></div>
+            <div class="factor"><div class="factor-head"><strong>其他差異</strong><span>10%</span></div><div class="progress"><span style="width:10%;background:#64748b"></span></div></div>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-top:18px">
+          <div class="card card-pad"><span class="state green">精密度</span><div style="font:800 27px 'Roboto Mono',monospace;color:var(--ink);margin:8px 0">RSD 1.18%</div><div class="subtle">95% 區間 0.92–1.47%，符合 ≤1.5%</div></div>
+          <div class="card card-pad"><span class="state green">準確度</span><div style="font:800 27px 'Roboto Mono',monospace;color:var(--ink);margin:8px 0">99.4%</div><div class="subtle">預測回收率 98.7–100.2%</div></div>
+          <div class="card card-pad"><span class="state amber">系統適用性</span><div style="font:800 27px 'Roboto Mono',monospace;color:var(--ink);margin:8px 0">91.2%</div><div class="subtle">失敗情境集中於樣品溫度超過 8°C</div></div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="5">
+        <div class="screen-head">
+          <div><div class="eyebrow">Approval package · v5</div><h1>核准轉移方案</h1><p>核准橋接試驗、改善措施、責任人與驗收門檻，形成完整且可稽核的轉移方案。</p></div>
+          <span class="badge"><span class="material-symbols-outlined">assignment_turned_in</span> 待主管簽核</span>
+        </div>
+        <div class="approval-board">
+          <div>
+            <div class="card card-pad">
+              <div class="card-title"><h2>改善與橋接方案</h2><span class="state purple">4 項措施</span></div>
+              <div class="action-item"><span class="action-icon"><span class="material-symbols-outlined">ac_unit</span></span><div><strong>執行 5°C / 8°C 樣品穩定性橋接</strong><div class="subtle">陳冠宇 · 3 批樣品 · 驗收：差異 ≤ 1.0%</div></div><span class="state amber">D+2</span></div>
+              <div class="action-item"><span class="action-icon"><span class="material-symbols-outlined">tune</span></span><div><strong>鎖定 Empower 積分參數</strong><div class="subtle">張雅雯 · 與 OpenLab 結果交叉覆核 20 針</div></div><span class="state purple">D+3</span></div>
+              <div class="action-item"><span class="action-icon"><span class="material-symbols-outlined">school</span></span><div><strong>完成偏差調查與積分補訓</strong><div class="subtle">周柏廷、陳冠宇 · 實作成績 ≥ 80 分</div></div><span class="state purple">D+4</span></div>
+              <div class="action-item"><span class="action-icon"><span class="material-symbols-outlined">description</span></span><div><strong>更新樣品前處理作業指引</strong><div class="subtle">許庭瑜 · 平衡時間固定 45±5 分鐘</div></div><span class="state green">完成</span></div>
+            </div>
+            <div class="card card-pad" style="margin-top:18px">
+              <div class="card-title"><h2>驗收門檻</h2><span class="subtle">方案編號 MTP-017-R1</span></div>
+              <div class="table-wrap"><table>
+                <thead><tr><th>性能項目</th><th>門檻</th><th>預測值</th><th>判定</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">平均含量差異</td><td>≤ 2.0%</td><td>0.8%</td><td><span class="state green">符合</span></td></tr>
+                  <tr><td class="mono">重複性 RSD</td><td>≤ 1.5%</td><td>1.18%</td><td><span class="state green">符合</span></td></tr>
+                  <tr><td class="mono">回收率</td><td>98.0–102.0%</td><td>99.4%</td><td><span class="state green">符合</span></td></tr>
+                  <tr><td class="mono">系統適用性通過率</td><td>100%</td><td>91.2%</td><td><span class="state amber">待橋接</span></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+          </div>
+          <div>
+            <div class="card card-pad">
+              <div class="card-title"><h2>核准摘要</h2><span class="state amber">條件式核准</span></div>
+              <div class="check-row"><span class="check">✓</span><div><strong>計畫範圍完整</strong><div class="subtle">方法、樣品與兩端實驗室已鎖定</div></div></div>
+              <div class="check-row"><span class="check">✓</span><div><strong>差異評估完成</strong><div class="subtle">8 項儀器、4 位人員、6 類環境條件</div></div></div>
+              <div class="check-row"><span class="check pending">!</span><div><strong>橋接證據待補</strong><div class="subtle">完成後由系統自動觸發最終覆核</div></div></div>
+              <div class="divider"></div>
+              <div class="field"><label for="approvalComment">核准意見</label><textarea id="approvalComment">同意依 MTP-017-R1 執行。系統適用性通過率達 100%，且橋接樣品差異 ≤ 1.0% 後，方可啟用例行檢驗。</textarea></div>
+            </div>
+            <div class="card card-pad" style="margin-top:18px">
+              <div class="card-title"><h2>電子簽章</h2><span class="material-symbols-outlined" style="color:var(--green)">verified_user</span></div>
+              <div class="signature"><strong>實驗室主管 · 林怡君</strong><p class="subtle" style="margin:4px 0">核准層級：QMS 方法轉移負責人</p><div class="signature-line"><span>簽章時間待寫入</span><span>憑證 QMS-8821</span></div></div>
+              <button class="primary-btn" type="button" style="width:100%;margin-top:14px"><span class="material-symbols-outlined">draw</span> 驗證身分並簽核</button>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad" style="margin-top:18px">
+          <div class="card-title"><h2>轉移資料列表</h2><span class="subtle">6 筆可追溯操作紀錄</span></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>編號</th><th>項目</th><th>負責人</th><th>期限</th><th>階段</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">ANA-001</td><td>建立轉移計畫</td><td>實驗室主管</td><td>D+1</td><td><span class="state purple">處理中</span></td></tr>
+              <tr><td class="mono">ANA-002</td><td>比對儀器能力</td><td>技術員</td><td>D+2</td><td><span class="state amber">待確認</span></td></tr>
+              <tr><td class="mono">ANA-003</td><td>評估人員能力</td><td>實驗室主管</td><td>D+3</td><td><span class="state amber">待確認</span></td></tr>
+              <tr><td class="mono">ANA-004</td><td>檢查環境差異</td><td>研究員</td><td>D+4</td><td><span class="state green">已完成</span></td></tr>
+              <tr><td class="mono">ANA-005</td><td>模擬再現風險</td><td>AI 方法轉移評</td><td>D+5</td><td><span class="state green">已完成</span></td></tr>
+              <tr><td class="mono">ANA-006</td><td>核准轉移方案</td><td>實驗室主管</td><td>D+6</td><td><span class="state green">已完成</span></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+(() => {
+  "use strict";
+
+  const titles = [
+    "建立轉移計畫",
+    "比對儀器能力",
+    "評估人員能力",
+    "檢查環境差異",
+    "模擬再現風險",
+    "核准轉移方案"
+  ];
+  const screens = Array.from(document.querySelectorAll("[data-screen]"));
+  const navButtons = Array.from(document.querySelectorAll("[data-i]"));
+  const chartInstances = {};
+  const primary = "#15803d";
+  const secondary = "#22c55e";
+  const accent = "#d97706";
+  const gridColor = "#bbf7d0";
+  const textColor = "#475569";
+
+  Chart.defaults.font.family = '"Roboto Mono", monospace';
+  Chart.defaults.color = textColor;
+
+  function commonScales() {
+    return {
+      x: {
+        grid: {display:false},
+        border: {color:"#14532d"},
+        ticks: {font:{size:10}}
+      },
+      y: {
+        beginAtZero:true,
+        grid:{color:gridColor},
+        border:{color:"#14532d"},
+        ticks:{font:{size:10}}
+      }
+    };
+  }
+
+  function initSkillChart() {
+    if (chartInstances.skill || !window.Chart) return;
+    const canvas = document.getElementById("skillChart");
+    if (!canvas || canvas.clientWidth < 1) return;
+    chartInstances.skill = new Chart(canvas, {
+      type:"radar",
+      data:{
+        labels:["標準液配置","系統適用性","積分審查","偏差處理","文件紀錄"],
+        datasets:[{
+          label:"接收端團隊",
+          data:[3.4,3.6,3.0,2.3,3.7],
+          borderColor:primary,
+          backgroundColor:"rgba(21,128,61,.16)",
+          pointBackgroundColor:secondary,
+          pointBorderColor:"#102f1e",
+          borderWidth:3
+        },{
+          label:"轉移門檻",
+          data:[3,3,3,3,3],
+          borderColor:accent,
+          backgroundColor:"rgba(217,119,6,.05)",
+          borderDash:[6,4],
+          pointRadius:2,
+          borderWidth:2
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:window.matchMedia("(prefers-reduced-motion: reduce)").matches?false:{duration:350},
+        scales:{r:{
+          min:0,max:4,
+          ticks:{stepSize:1,display:false},
+          grid:{color:gridColor},
+          angleLines:{color:gridColor},
+          pointLabels:{color:"#14532d",font:{size:10,weight:"700"}}
+        }},
+        plugins:{legend:{position:"bottom",labels:{usePointStyle:true,boxWidth:8}}}
+      }
+    });
+  }
+
+  function initEnvChart() {
+    if (chartInstances.env || !window.Chart) return;
+    const canvas = document.getElementById("envChart");
+    if (!canvas || canvas.clientWidth < 1) return;
+    chartInstances.env = new Chart(canvas, {
+      type:"line",
+      data:{
+        labels:["8/16","8/17","8/18","8/19","8/20","8/21","8/22"],
+        datasets:[{
+          label:"溫度 °C",
+          data:[22.1,22.6,22.3,22.8,22.2,22.5,22.4],
+          borderColor:primary,
+          backgroundColor:"rgba(34,197,94,.14)",
+          pointBackgroundColor:"#fff",
+          pointBorderColor:primary,
+          pointBorderWidth:2,
+          tension:0,
+          fill:true,
+          yAxisID:"y"
+        },{
+          label:"濕度 %",
+          data:[52,55,51,58,56,53,54.8],
+          borderColor:accent,
+          backgroundColor:"transparent",
+          pointBackgroundColor:accent,
+          tension:0,
+          yAxisID:"y1"
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:window.matchMedia("(prefers-reduced-motion: reduce)").matches?false:{duration:350},
+        interaction:{mode:"index",intersect:false},
+        scales:{
+          x:{grid:{display:false},border:{color:"#14532d"}},
+          y:{min:20,max:25,grid:{color:gridColor},border:{color:"#14532d"}},
+          y1:{min:40,max:65,position:"right",grid:{display:false},border:{color:"#14532d"}}
+        },
+        plugins:{legend:{position:"bottom",labels:{usePointStyle:true,boxWidth:8}}}
+      }
+    });
+  }
+
+  function initRiskChart() {
+    if (chartInstances.risk || !window.Chart) return;
+    const canvas = document.getElementById("riskChart");
+    if (!canvas || canvas.clientWidth < 1) return;
+    chartInstances.risk = new Chart(canvas, {
+      type:"bar",
+      data:{
+        labels:["0.6–0.8","0.8–1.0","1.0–1.2","1.2–1.4","1.4–1.6","1.6–1.8"],
+        datasets:[{
+          label:"模擬次數",
+          data:[620,1840,3120,2670,1230,520],
+          backgroundColor:["#bbf7d0","#86efac",secondary,primary,accent,"#fed7aa"],
+          borderColor:"#102f1e",
+          borderWidth:2,
+          borderRadius:0
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:window.matchMedia("(prefers-reduced-motion: reduce)").matches?false:{duration:350},
+        scales:commonScales(),
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{title:items=>"RSD "+items[0].label+"%"}}
+        }
+      }
+    });
+  }
+
+  function initCharts(index) {
+    if (index===2) initSkillChart();
+    if (index===3) initEnvChart();
+    if (index===4) initRiskChart();
+  }
+
+  function show(index) {
+    const safeIndex=Math.max(0,Math.min(5,Number(index)||0));
+    screens.forEach((screen,screenIndex)=>{
+      const active=screenIndex===safeIndex;
+      screen.classList.toggle("active",active);
+      screen.setAttribute("aria-hidden",active?"false":"true");
+    });
+    navButtons.forEach((button,buttonIndex)=>{
+      const active=buttonIndex===safeIndex;
+      button.classList.toggle("active",active);
+      if(active) button.setAttribute("aria-current","step");
+      else button.removeAttribute("aria-current");
+    });
+    document.getElementById("crumb").textContent=titles[safeIndex];
+    document.getElementById("nextAction").textContent=safeIndex===5?"匯出評估報告":"儲存並下一步";
+    document.title=titles[safeIndex]+" · 分析方法轉移風險評估器";
+    requestAnimationFrame(()=>initCharts(safeIndex));
+  }
+
+  function hashIndex() {
+    const match=window.location.hash.match(/(?:go=|v)([0-9]+)/);
+    return match?Math.max(0,Math.min(5,Number(match[1]))):0;
+  }
+
+  navButtons.forEach(button=>{
+    button.addEventListener("click",()=>{
+      const index=Number(button.dataset.i);
+      if(window.location.hash==="#go="+index) show(index);
+      else window.location.hash="go="+index;
+    });
+  });
+
+  document.getElementById("nextAction").addEventListener("click",()=>{
+    const current=navButtons.findIndex(button=>button.classList.contains("active"));
+    if(current<5) window.location.hash="go="+(current+1);
+  });
+
+  window.addEventListener("hashchange",()=>show(hashIndex()));
+  show(hashIndex());
+})();
+</script>
+</body>
+</html>
